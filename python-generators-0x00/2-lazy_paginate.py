@@ -11,7 +11,7 @@ def paginate_users(page_size, offset):
     if conn is None:
         return []
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT user_id, name, email, age FROM user_data LIMIT %s OFFSET %s", (page_size, offset))
+    cursor.execute("SELECT * FROM user_data LIMIT %s OFFSET %s", (page_size, offset))
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
