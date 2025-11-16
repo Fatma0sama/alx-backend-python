@@ -1,17 +1,35 @@
 #!/usr/bin/env python3
 """Views for messaging app"""
-from rest_framework import viewsets
+from rest_framework import viewsets, status, filters
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 
 
 class ConversationViewSet(viewsets.ModelViewSet):
-    """API endpoint for conversations"""
+    """ViewSet for listing and creating conversations"""
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
+
+    @action(detail=True, methods=['post'])
+    def send_message(self, request, pk=None):
+        """Send a message to this conversation"""
+        conversation = self.get_object()
+        serializer = MessageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(conversation=conversation)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MessageViewSet(viewsets.ModelViewSet):
-    """API endpoint for messages"""
+    """ViewSet for listing and creating messages"""
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['sent_at']
+    ordering = ['-sent_at']
