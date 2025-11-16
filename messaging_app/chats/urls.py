@@ -14,6 +14,6 @@ conversation_router = nested_routers.NestedDefaultRouter(router, r'conversations
 conversation_router.register(r'messages', MessageViewSet, basename='conversation-messages')
 
 urlpatterns = [
-    path('api/', include(router.urls)),
-    path('api/', include(conversation_router.urls)),
+    path('', include(router.urls)),
+    path('', include(conversation_router.urls)),
 ]
