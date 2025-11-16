@@ -46,7 +46,7 @@ class TestGithubOrgClient(unittest.TestCase):
             "login": "google",
             "id": 1342004,
             "repos_url": "https://api.github.com/orgs/google/repos"
-        }   
+        }
         # Use patch as context manager to mock the org property
         with patch.object(
             GithubOrgClient,
@@ -55,18 +55,18 @@ class TestGithubOrgClient(unittest.TestCase):
             return_value=known_payload
         ) as mock_org:
             # Create client instance
-            client = GithubOrgClient("google") 
+            client = GithubOrgClient("google")
             # Access _public_repos_url property
-            result = client._public_repos_url  
+            result = client._public_repos_url
             # Verify the result matches the repos_url from payload
-            self.assertEqual(result, known_payload["repos_url"])  
+            self.assertEqual(result, known_payload["repos_url"])
             # Verify org property was accessed
             mock_org.assert_called_once()
 
     @patch('client.get_json')
     def test_public_repos(self, mock_get_json):
         """
-        Test that public_repos returns the expected list of repos 
+        Test that public_repos returns the expected list of repos
         Args:
             mock_get_json: Mocked get_json function
         """
@@ -99,7 +99,7 @@ class TestGithubOrgClient(unittest.TestCase):
             mock_get_json.assert_called_once_with(
                 "https://api.github.com/orgs/google/repos"
             )
-            
+
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
         ({"license": {"key": "other_license"}}, "my_license", False),
@@ -107,7 +107,7 @@ class TestGithubOrgClient(unittest.TestCase):
     def test_has_license(self, repo, license_key, expected):
         """
         Test that has_license correctly identifies if a repo has a license
-        
+
         Args:
             repo: Repository dictionary with license information
             license_key: License key to check for
@@ -143,7 +143,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
             """
             Side effect function to return appropriate payload based on URL
             Args:
-                url: The URL being requested  
+                url: The URL being requested
             Returns:
                 Mock response object with json() method
             """
@@ -151,9 +151,9 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
             class MockResponse:
                 def __init__(self, json_data):
                     self.json_data = json_data
-                
+
                 def json(self):
-                    return self.json_data   
+                    return self.json_data
             # Check which URL is being requested and return appropriate payload
             if url == "https://api.github.com/orgs/google":
                 return MockResponse(cls.org_payload)
@@ -170,8 +170,8 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         Tear down class fixtures after running tests
         Stop the patcher for requests.get
         """
-        
         cls.get_patcher.stop()
+
 
 if __name__ == "__main__":
     unittest.main()
