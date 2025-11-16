@@ -99,6 +99,7 @@ class TestGithubOrgClient(unittest.TestCase):
             mock_get_json.assert_called_once_with(
                 "https://api.github.com/orgs/google/repos"
             )
+            
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
         ({"license": {"key": "other_license"}}, "my_license", False),
@@ -118,6 +119,8 @@ class TestGithubOrgClient(unittest.TestCase):
         result = client.has_license(repo, license_key)
         # Verify the result matches expected value
         self.assertEqual(result, expected)
+
+
 @parameterized_class([
     {
         'org_payload': TEST_PAYLOAD[0][0],
@@ -167,6 +170,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         Tear down class fixtures after running tests
         Stop the patcher for requests.get
         """
+        
         cls.get_patcher.stop()
 
 if __name__ == "__main__":
