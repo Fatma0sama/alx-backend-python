@@ -2,6 +2,7 @@
 """Unit and Integration tests for client.GithubOrgClient"""
 import unittest
 import fixtures
+from client import GithubOrgClient
 from unittest.mock import Mock, patch
 from parameterized import parameterized, parameterized_class
 
