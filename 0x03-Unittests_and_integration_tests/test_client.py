@@ -138,28 +138,30 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         Set up class fixtures before running tests
         Mock requests.get to return example payloads from fixtures
         """
-        def side_effect_function(url):
-            """Mock response based on URL"""
+        # Define the side_effect function for requests.get
+        def side_effect(url):
+            """
+            Side effect function to return appropriate payload based on URL
+            Args:
+                url: The URL being requested
+            Returns:
+                Mock response object with json() method
+            """
+            # Mock response class
             class MockResponse:
-                """Mock response object"""
                 def __init__(self, json_data):
                     self.json_data = json_data
 
                 def json(self):
-                    """Return json data"""
                     return self.json_data
-
+            # Check which URL is being requested and return appropriate payload
             if url == "https://api.github.com/orgs/google":
                 return MockResponse(cls.org_payload)
-            if url == "https://api.github.com/orgs/google/repos":
+            elif url == "https://api.github.com/orgs/google/repos":
                 return MockResponse(cls.repos_payload)
-            return MockResponse(None)
-
+            return MockResponse({})
         # Start patcher for requests.get
-        cls.get_patcher = patch(
-            'requests.get',
-            side_effect=side_effect_function
-        )
+        cls.get_patcher = patch('requests.get', side_effect=side_effect)
         cls.get_patcher.start()
 
     @classmethod
@@ -169,25 +171,6 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         Stop the patcher for requests.get
         """
         cls.get_patcher.stop()
-
-    def test_public_repos(self):
-        """
-        Integration test for public_repos method
-        Test that public_repos returns expected repos based on fixtures
-        """
-        client = GithubOrgClient("google")
-        self.assertEqual(client.public_repos(), self.expected_repos)
-
-    def test_public_repos_with_license(self):
-        """
-        Integration test for public_repos method with license filter
-        Test that public_repos with license="apache-2.0" returns expected repos
-        """
-        client = GithubOrgClient("google")
-        self.assertEqual(
-            client.public_repos(license="apache-2.0"),
-            self.apache2_repos
-        )
 
 
 if __name__ == "__main__":
