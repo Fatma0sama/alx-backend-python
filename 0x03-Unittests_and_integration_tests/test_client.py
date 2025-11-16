@@ -138,6 +138,14 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         Set up class fixtures before running tests
         Mock requests.get to return example payloads from fixtures
         """
+        # Mock response class
+        class MockResponse:
+            def __init__(self, json_data):
+                self.json_data = json_data
+
+            def json(self):
+                return self.json_data
+
         # Define the side_effect function for requests.get
         def side_effect(url):
             """
@@ -147,19 +155,13 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
             Returns:
                 Mock response object with json() method
             """
-            # Mock response class
-            class MockResponse:
-                def __init__(self, json_data):
-                    self.json_data = json_data
-
-                def json(self):
-                    return self.json_data
             # Check which URL is being requested and return appropriate payload
             if url == "https://api.github.com/orgs/google":
                 return MockResponse(cls.org_payload)
             elif url == "https://api.github.com/orgs/google/repos":
                 return MockResponse(cls.repos_payload)
-            return MockResponse({})
+            return MockResponse(None)
+
         # Start patcher for requests.get
         cls.get_patcher = patch('requests.get', side_effect=side_effect)
         cls.get_patcher.start()
