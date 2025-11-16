@@ -5,6 +5,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('chats.urls')),  # include your chats app routes
+    path('api/', include('chats.urls')),  # new
     path('api-auth/', include('rest_framework.urls')),  # required by the checker
 ]
