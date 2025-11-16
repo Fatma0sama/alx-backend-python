@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unit and Integration tests for client.GithubOrgClient"""
 import unittest
+import fixtures
 from unittest.mock import Mock, patch
 from parameterized import parameterized, parameterized_class
 
@@ -59,18 +60,18 @@ class TestGithubOrgClient(unittest.TestCase):
             self.assertListEqual(apache_repos, ["repo1"])
         mock_get_json.assert_called_once()
 
-
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
         ({"license": {"key": "other_license"}}, "my_license", False),
     ])
     def test_has_license(self, repo, license_key: str, expected: bool) -> None:
         """has_license returns True if repo has the given license key"""
-        self.assertEqual(client.GithubOrgClient.has_license(repo, license_key), expected)
+        self.assertEqual(client.GithubOrgClient.has_license(repo, license_key),
+                         expected)
 
 
 # Integration tests
-import fixtures
+
 
 param = {
     "org_payload": fixtures.TEST_PAYLOAD[0][0],
