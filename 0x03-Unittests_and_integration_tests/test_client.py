@@ -138,19 +138,29 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         Set up class fixtures before running tests
         Mock requests.get to return example payloads from fixtures
         """
-        # Configuration for route payload
-        config = {
-            'return_value.json.side_effect': [
-                cls.org_payload,
-                cls.repos_payload,
-                cls.org_payload,
-                cls.repos_payload,
-            ]
-        }
+        def side_effect_function(url):
+            """Mock response based on URL"""
+            class MockResponse:
+                """Mock response object"""
+                def __init__(self, json_data):
+                    self.json_data = json_data
+
+                def json(self):
+                    """Return json data"""
+                    return self.json_data
+
+            if url == "https://api.github.com/orgs/google":
+                return MockResponse(cls.org_payload)
+            if url == "https://api.github.com/orgs/google/repos":
+                return MockResponse(cls.repos_payload)
+            return MockResponse(None)
 
         # Start patcher for requests.get
-        cls.get_patcher = patch('requests.get', **config)
-        cls.mock_get = cls.get_patcher.start()
+        cls.get_patcher = patch(
+            'requests.get',
+            side_effect=side_effect_function
+        )
+        cls.get_patcher.start()
 
     @classmethod
     def tearDownClass(cls):
