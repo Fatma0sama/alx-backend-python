@@ -138,33 +138,19 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         Set up class fixtures before running tests
         Mock requests.get to return example payloads from fixtures
         """
-        # Mock response class
-        class MockResponse:
-            def __init__(self, json_data):
-                self.json_data = json_data
-
-            def json(self):
-                return self.json_data
-
-        # Define the side_effect function for requests.get
-        def side_effect(url):
-            """
-            Side effect function to return appropriate payload based on URL
-            Args:
-                url: The URL being requested
-            Returns:
-                Mock response object with json() method
-            """
-            # Check which URL is being requested and return appropriate payload
-            if url == "https://api.github.com/orgs/google":
-                return MockResponse(cls.org_payload)
-            elif url == "https://api.github.com/orgs/google/repos":
-                return MockResponse(cls.repos_payload)
-            return MockResponse(None)
+        # Configuration for route payload
+        config = {
+            'return_value.json.side_effect': [
+                cls.org_payload,
+                cls.repos_payload,
+                cls.org_payload,
+                cls.repos_payload,
+            ]
+        }
 
         # Start patcher for requests.get
-        cls.get_patcher = patch('requests.get', side_effect=side_effect)
-        cls.get_patcher.start()
+        cls.get_patcher = patch('requests.get', **config)
+        cls.mock_get = cls.get_patcher.start()
 
     @classmethod
     def tearDownClass(cls):
@@ -183,10 +169,10 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         client = GithubOrgClient("google")
 
         # Call public_repos method
-        result = client.public_repos()
+        repos = client.public_repos()
 
         # Verify the result matches expected repos from fixtures
-        self.assertEqual(result, self.expected_repos)
+        self.assertEqual(repos, self.expected_repos)
 
     def test_public_repos_with_license(self):
         """
@@ -197,10 +183,10 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         client = GithubOrgClient("google")
 
         # Call public_repos with apache-2.0 license filter
-        result = client.public_repos(license="apache-2.0")
+        repos = client.public_repos(license="apache-2.0")
 
         # Verify the result matches expected apache2 repos from fixtures
-        self.assertEqual(result, self.apache2_repos)
+        self.assertEqual(repos, self.apache2_repos)
 
 
 if __name__ == "__main__":
