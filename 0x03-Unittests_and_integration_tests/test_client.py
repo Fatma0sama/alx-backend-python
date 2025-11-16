@@ -40,26 +40,32 @@ class TestGithubOrgClient(unittest.TestCase):
             self.assertEqual(g._public_repos_url, fake_org["repos_url"])
 
     @patch("client.get_json")
-    def test_public_repos(self, mock_get_json: Mock) -> None:
-        """Unit test for public_repos (Task 6)"""
-        mock_get_json.return_value = [
-            {"name": "repo1", "license": {"key": "apache-2.0"}},
-            {"name": "repo2", "license": {"key": "bsd-3-clause"}},
-            {"name": "repo3", "license": None},
-        ]
-        g = client.GithubOrgClient("google")
-        # patch the _public_repos_url property
-        with patch.object(
-            client.GithubOrgClient,
-            "_public_repos_url",
-            new_callable=property,
-            return_value="https://fake.url"
-        ):
-            repos = g.public_repos()
-            self.assertListEqual(repos, ["repo1", "repo2", "repo3"])
-            apache_repos = g.public_repos(license="apache-2.0")
-            self.assertListEqual(apache_repos, ["repo1"])
-        mock_get_json.assert_called_once()
+def test_public_repos(self, mock_get_json: Mock) -> None:
+    """Test GithubOrgClient.public_repos returns list of repo names"""
+    test_repos_payload = [
+        {"name": "repo1", "license": {"key": "apache-2.0"}},
+        {"name": "repo2", "license": {"key": "bsd-3-clause"}},
+        {"name": "repo3", "license": None},
+    ]
+    mock_get_json.return_value = test_repos_payload
+
+    g = client.GithubOrgClient("google")
+
+    # Patch the property _public_repos_url to a fake URL
+    with patch.object(
+        client.GithubOrgClient,
+        "_public_repos_url",
+        new_callable=property,
+        return_value="https://fake.url"
+    ):
+        repos = g.public_repos()
+        self.assertListEqual(repos, ["repo1", "repo2", "repo3"])
+
+        apache_repos = g.public_repos(license="apache-2.0")
+        self.assertListEqual(apache_repos, ["repo1"])
+
+    # Check that get_json was called exactly once per public_repos call
+    self.assertEqual(mock_get_json.call_count, 2)
 
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
