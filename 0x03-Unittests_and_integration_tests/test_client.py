@@ -46,8 +46,7 @@ class TestGithubOrgClient(unittest.TestCase):
             "login": "google",
             "id": 1342004,
             "repos_url": "https://api.github.com/orgs/google/repos"
-        }
-        
+        }   
         # Use patch as context manager to mock the org property
         with patch.object(
             GithubOrgClient,
@@ -56,14 +55,11 @@ class TestGithubOrgClient(unittest.TestCase):
             return_value=known_payload
         ) as mock_org:
             # Create client instance
-            client = GithubOrgClient("google")
-            
+            client = GithubOrgClient("google") 
             # Access _public_repos_url property
-            result = client._public_repos_url
-            
+            result = client._public_repos_url  
             # Verify the result matches the repos_url from payload
-            self.assertEqual(result, known_payload["repos_url"])
-            
+            self.assertEqual(result, known_payload["repos_url"])  
             # Verify org property was accessed
             mock_org.assert_called_once()
 
@@ -146,10 +142,8 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         def side_effect(url):
             """
             Side effect function to return appropriate payload based on URL
-            
             Args:
-                url: The URL being requested
-                
+                url: The URL being requested  
             Returns:
                 Mock response object with json() method
             """
@@ -159,8 +153,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
                     self.json_data = json_data
                 
                 def json(self):
-                    return self.json_data
-            
+                    return self.json_data   
             # Check which URL is being requested and return appropriate payload
             if url == "https://api.github.com/orgs/google":
                 return MockResponse(cls.org_payload)
