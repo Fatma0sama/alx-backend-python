@@ -4,7 +4,9 @@ from datetime import datetime
 from collections import defaultdict
 from django.http import HttpResponseForbidden
 
+# Logger for request logging
 logging.basicConfig(filename='requests.log', level=logging.INFO)
+
 
 class RequestLoggingMiddleware:
     def __init__(self, get_response):
@@ -22,7 +24,7 @@ class RestrictAccessByTimeMiddleware:
 
     def __call__(self, request):
         hour = datetime.now().hour
-        if not (18 <= hour <= 21):
+        if not (18 <= hour <= 21):  # Access allowed only between 6PM and 9PM
             return HttpResponseForbidden("Chat allowed only between 6PM and 9PM")
         return self.get_response(request)
 
@@ -30,13 +32,13 @@ class RestrictAccessByTimeMiddleware:
 class OffensiveLanguageMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self.ip_data = defaultdict(list)
+        self.ip_data = defaultdict(list)  # Track requests per IP
 
     def __call__(self, request):
         if request.method == "POST":
             ip = request.META.get("REMOTE_ADDR")
             now = time.time()
-
+            # Keep only requests in the last 60 seconds
             self.ip_data[ip] = [t for t in self.ip_data[ip] if now - t < 60]
 
             if len(self.ip_data[ip]) >= 5:
@@ -47,7 +49,7 @@ class OffensiveLanguageMiddleware:
         return self.get_response(request)
 
 
-class RolePermissionMiddleware:
+class RolepermissionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
