@@ -1,0 +1,29 @@
+{
+    "info": {
+        "name": "Messaging API Collection",
+        "_postman_id": "12345-abcde",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Get Messages",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{JWT_TOKEN}}"
+                    }
+                ],
+                "url": {
+                    "raw": "http://localhost:8000/api/conversations/1/messages/",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "port": "8000",
+                    "path": ["api", "conversations", "1", "messages"]
+                }
+            },
+            "response": []
+        }
+    ]
+}
