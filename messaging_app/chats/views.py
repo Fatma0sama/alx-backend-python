@@ -4,11 +4,17 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Message, Conversation
 from .serializers import MessageSerializer
 from .permissions import IsParticipantOfConversation
+from django_filters.rest_framework import DjangoFilterBackend
+from .pagination import MessagePagination
+from .filters import MessageFilter
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]
+    pagination_class = MessagePagination  # ← pagination per view
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MessageFilter  # ← filter
 
     def get_queryset(self):
         # Checker wants to see Message.objects.filter
