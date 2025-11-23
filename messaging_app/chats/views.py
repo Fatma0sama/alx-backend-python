@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
+from .permissions import IsParticipantOfConversation
+from rest_framework import viewsets
 
 
 class ConversationViewSet(viewsets.ModelViewSet):
@@ -27,6 +29,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
 
 class MessageViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsParticipantOfConversation]
     """ViewSet for listing and creating messages"""
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
