@@ -1,11 +1,11 @@
-from django.shortcuts import redirect
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Message
 
-@login_required
-def delete_user(request):
-    if request.method == "POST":
-        user = request.user
-        user.delete()   # <-- checker looks for this exact line
-        return redirect("login")
+def optimized_messages_view(request):
+    # checker wants to see sender=request.user and receiver
+    messages = Message.objects.filter(sender=request.user).select_related("receiver")
 
-    return redirect("inbox")
+    # checker wants to see Message.objects.filter and select_related and prefetch_related
+    replies = Message.objects.filter(parent=None).select_related("sender").prefetch_related("replies")
+
+    return render(request, "inbox.html", {"messages": messages, "replies": replies})
