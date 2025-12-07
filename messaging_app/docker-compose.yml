@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # 1. Django Web App Service
+  web:
+    build: .
+    container_name: django_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app/ # Mount the local directory to the container
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    # Load environment variables from the .env file for Django settings
+    env_file:
+      - .env
+    environment:
+      # These environment variables are used by Django's settings.py
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_NAME: ${MYSQL_DATABASE}
+      DATABASE_USER: ${MYSQL_USER}
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD}
+
+  # 2. MySQL Database Service
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    # Environment variables for MySQL initialization, read from .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    # Optional: Expose the DB port for local debugging, but not necessary for the app to work
+    # ports:
+    #   - "3306:3306"
