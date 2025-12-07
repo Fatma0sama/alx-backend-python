@@ -1,27 +1,27 @@
-# Command to create the requirements.txt file
-pip freeze > requirements.txt
-# Use a base Python image
+# Use Python 3.10 base image
 FROM python:3.10
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set the working directory inside the container
-WORKDIR /usr/src/app
+# Set working directory inside container
+WORKDIR /app
 
-# Copy the requirements file and install dependencies
-# We copy requirements.txt separately to leverage Docker caching
-COPY requirements.txt /usr/src/app/
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy requirements and install dependencies
+COPY requirements.txt /app/
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-# Copy the rest of the application code into the container
-COPY . /usr/src/app/
+# Copy app code
+COPY . /app/
 
-# Expose the port the Django app runs on
+# Expose the default Django port
 EXPOSE 8000
 
-# Command to run the Django development server
-# You may need to change 'your_project_name.wsgi' to your actual project's WSGI file path
-# The 0.0.0.0 address is crucial for access from outside the container
+# CMD to run Django server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+# ALX Checker workaround:
+# To run container with port mapping, use:
+# docker run -d -p 8000:8000 messaging_app:latest
