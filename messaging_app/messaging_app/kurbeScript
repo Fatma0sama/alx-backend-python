@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Start minikube
+minikube start
+
+# Verify cluster
+kubectl cluster-info
+
+# Get pods
+kubectl get pods -A
