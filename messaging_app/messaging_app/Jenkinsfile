@@ -1,3 +1,5 @@
+pip3 install
+git branch
 pipeline {
     agent any
 
